@@ -1,0 +1,31 @@
+name: deploy-container
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/container/**'
+
+# sets the working directory, so if we run npm install it will be ran in this location
+defaults:
+  run:
+    working-directory: packages/container
+
+# can have multiple jobs, they run in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest # can have different flavors of vms for these to run on, we want linux
+
+    # the commands we want to run on this 'build' job
+    steps:
+      - uses: actions/checkout@v2 # github action to checkout the code from our project
+      - run: npm install # install dependencies
+      - run: npm run build # builds with webpack
+
+      - uses: shinyinc/action-aws-cli@v1.2 # gives us access to AWS cli
+      - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/container/latest # syncs our build directory with the appropriate s3 bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ""

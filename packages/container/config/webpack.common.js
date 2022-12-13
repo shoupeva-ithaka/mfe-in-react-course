@@ -1,3 +1,5 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 // Shared webpack between dev and prod
 module.exports = {
     module: {
@@ -28,5 +30,10 @@ module.exports = {
                 },
             },
         ],
-    }
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './public/index.html'
+        })
+    ]
 };
