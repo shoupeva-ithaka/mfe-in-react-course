@@ -1,16 +1,16 @@
-name: deploy-container
+name: deploy-marketing
 
 on:
   push:
     branches:
       - master
     paths:
-      - 'packages/container/**'
+      - 'packages/marketing/**'
 
 # sets the working directory, so if we run npm install it will be ran in this location
 defaults:
   run:
-    working-directory: packages/container
+    working-directory: packages/marketing
 
 # can have multiple jobs, they run in parallel
 jobs:
@@ -22,16 +22,16 @@ jobs:
       - uses: actions/checkout@v2 # github action to checkout the code from our project
       - run: npm install # install dependencies
       - run: npm run build # builds with webpack
-        env:
-          PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }} # this provides an environment variable to the build process
 
       - uses: shinyinc/action-aws-cli@v1.2 # gives us access to AWS cli
-      - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/container/latest # syncs our build directory with the appropriate s3 bucket
+      - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/marketing/latest # syncs our build directory with the appropriate s3 bucket
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: "us-east-1"
-      - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/container/latest/index.html"
+      # We need to create an invalidation for the files that do not change when we make deployments. In the
+      # container, it was index.html. For our micro frontends, it will be remoteEntry.js.
+      - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/marketing/latest/remoteEntry.js"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
