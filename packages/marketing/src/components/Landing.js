@@ -24,6 +24,12 @@ function Copyright() {
   );
 }
 
+/**
+ * material-ui is a css-in-js library. This basically creates somewhat randomly generated
+ * class names to attempt to make them unique. However, we use 
+ * this library in both the container and marketing. Potentially, we can get
+ * class name collisions, which can cause errors in styling.
+ */
 const useStyles = makeStyles((theme) => ({
   '@global': {
     a: {
