@@ -17,7 +17,7 @@ const prodConfig = {
       name: 'container',
       remotes: {
         marketing: `marketing@${domain}/marketing/latest/remoteEntry.js`, // assuming the marketing project will be nested inside a folder at this domain
-        auth: `auth@${domain}/auth/latest/remotEntry.js`,
+        auth: `auth@${domain}/auth/latest/remoteEntry.js`,
       },
       shared: packagejson.dependencies
     })
